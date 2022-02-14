@@ -6,7 +6,7 @@
 #    By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/13 16:07:02 by ynakashi          #+#    #+#              #
-#    Updated: 2022/02/13 16:18:35 by ynakashi         ###   ########.fr        #
+#    Updated: 2022/02/14 07:51:49 by ynakashi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,9 @@ re		: fclean $(NAME)
 
 # sh
 run		:
-	echo "hello world"
+	./philo
+
+# kati	: re run
 
 debug	: fclean
 	$(CC) $(DEBUG_FLAGS) $(SRCS) -o $(NAME)
