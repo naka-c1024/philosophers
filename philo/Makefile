@@ -6,7 +6,7 @@
 #    By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/13 16:07:02 by ynakashi          #+#    #+#              #
-#    Updated: 2022/02/22 10:56:33 by ynakashi         ###   ########.fr        #
+#    Updated: 2022/02/22 11:08:39 by ynakashi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ re		: fclean $(NAME)
 
 # sh
 sort	:
-	./philo 5 800 200 200 3 | awk '{print $1}' | tee output.txt | sort -n > sort.txt && diff -u output.txt sort.txt && rm output.txt sort.txt
+	./philo 200 60 60 60 | awk '{print $1}' | tee output.txt | sort -n > sort.txt && diff -u output.txt sort.txt && rm output.txt sort.txt
 
 # kati	: re run
 
