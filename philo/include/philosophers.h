@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/14 08:53:03 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/22 08:50:51 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,16 @@
 # define SHOW_THINK "is thinking"
 # define SHOW_DIED "died"
 
+# define RESET "\033[0m"
+# define BLACK "\033[30m"
+# define RED "\033[31m"
+# define GREEN "\033[32m"
+# define YELLOW "\033[33m"
+# define BLUE "\033[34m"
+# define MAGENTA "\033[35m"
+# define CYAN "\033[36m"
+# define WHITE "\033[37m"
+
 typedef struct s_rules
 {
 	int	philo_num;
@@ -36,7 +46,30 @@ typedef struct s_rules
 	int	eat_time;
 	int	sleep_time;
 	int	ate_num;
+
+	long long			first_timestamp;
+	pthread_mutex_t		*m_fork;
+	pthread_mutex_t		meal_check;
+	pthread_mutex_t		mutex;
+	int					die_flg;
+	int					ate;
+	int					all_ate;
 }	t_rules;
+
+typedef struct s_philo
+{
+	int					id;
+	int					left_fork_id;
+	int					right_fork_id;
+	int					ate_count;
+	long long			t_last_meal;
+	long long			limit;
+	t_rules				*info;
+	pthread_mutex_t		mutex;
+	struct s_philo		*left; // 左のphilo, next
+	struct s_philo		*right; // 右のphilo, pre
+	pthread_t			thread_id;
+}			t_philo;
 
 typedef enum e_flag
 {
@@ -53,5 +86,9 @@ size_t	ft_strlen(char *str);
 int		ft_isdigit(int c);
 bool	is_uint(char *str);
 bool	check_arg(int argc, char **argv);
+
+// init_rules.c
+int		ft_atoi(const char *str);
+t_rules	*init_rules(int argc, char **argv);
 
 #endif

@@ -6,19 +6,21 @@
 #    By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/13 16:07:02 by ynakashi          #+#    #+#              #
-#    Updated: 2022/02/14 07:51:49 by ynakashi         ###   ########.fr        #
+#    Updated: 2022/02/22 10:56:33 by ynakashi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	=	philo
+SHELL := /bin/bash
 
-CC		=	cc
+NAME	:=	philo
 
-RM		=	rm -rf
+CC		:=	cc
 
-DEBUG_FLAGS	=	-g
+RM		:=	rm -rf
 
-SRCS	=	./srcs/*.c
+DEBUG_FLAGS	:=	-g
+
+SRCS	:=	./srcs/*.c
 
 $(NAME)	:
 	$(CC) $(SRCS) -o $(NAME)
@@ -29,8 +31,8 @@ fclean	:
 re		: fclean $(NAME)
 
 # sh
-run		:
-	./philo
+sort	:
+	./philo 5 800 200 200 3 | awk '{print $1}' | tee output.txt | sort -n > sort.txt && diff -u output.txt sort.txt && rm output.txt sort.txt
 
 # kati	: re run
 
