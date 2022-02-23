@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 14:40:51 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 14:54:27 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,27 +40,27 @@ typedef struct s_rules
 	int	sleep_time;
 	int	ate_num;
 
-	pthread_mutex_t		*m_fork;
-	pthread_mutex_t		meal_check;
-	pthread_mutex_t		mutex;
-	int					die_flg;
-	int					ate;
-	int					all_ate;
+	pthread_mutex_t	*m_fork;
+	pthread_mutex_t	meal_check;
+	// pthread_mutex_t	mutex; // 同じの2個あるけど必要?
+	int				die_flg;
+	int				ate; // ateとall_ateとate_countの違いは何?
+	int				all_ate; // ateとall_ateとate_countの違いは何?
 }	t_rules;
 
 typedef struct s_philo
 {
-	int					id;
-	int					left_fork_id;
-	int					right_fork_id;
-	int					ate_count;
-	long long			t_last_meal;
-	long long			limit;
-	t_rules				*rules;
-	pthread_mutex_t		mutex;
-	struct s_philo		*left; // 左のphilo, next
-	struct s_philo		*right; // 右のphilo, pre
-	pthread_t			thread_id; // これをpthread_createの第一引数に&をつけて渡す
+	int				id;
+	pthread_t		thread_id; // これをpthread_createの第一引数に&をつけて渡す
+	int				left_fork_id;
+	int				right_fork_id;
+	int				ate_count; // ateとall_ateとate_countの違いは何?
+	long long		t_last_meal;
+	long long		limit;
+	// pthread_mutex_t	mutex; // 同じの2個あるけど必要?
+	t_rules			*rules;
+	struct s_philo	*left; // 左のphilo, next
+	struct s_philo	*right; // 右のphilo, pre
 }			t_philo;
 
 typedef enum e_flag
