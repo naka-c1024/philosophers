@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 10:41:25 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 11:18:34 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ typedef struct s_philo
 	int					ate_count;
 	long long			t_last_meal;
 	long long			limit;
-	t_rules				*info;
+	t_rules				*rules;
 	pthread_mutex_t		mutex;
 	struct s_philo		*left; // 左のphilo, next
 	struct s_philo		*right; // 右のphilo, pre
