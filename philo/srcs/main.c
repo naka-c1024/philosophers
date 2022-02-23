@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 12:12:57 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 12:37:15 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,7 @@ t_philo	*create_philo(t_rules *rules)
 	philo = init_philo(rules); // 最初に一人
 	if (!philo)
 	{
-		free(rules->m_fork);
-		free(rules);
+		destroy_rules(rules);
 		return (NULL);
 	}
 	i = 1;
@@ -404,20 +403,6 @@ bool	main_threads(t_philo *philo)
 	return (true);
 }
 
-// bool	wait_end_threads(t_philo *philo)
-// {
-// 	int	philo_num;
-
-// 	philo_num = philo->rules->philo_num;
-// 	while (philo_num--)
-// 	{
-// 		if (pthread_join(philo->thread_id, NULL))
-// 			return (false);
-// 		philo = philo->left;
-// 	}
-// 	return (true);
-// }
-
 int main(int argc, char **argv)
 {
 	t_rules	*rules;
@@ -433,19 +418,14 @@ int main(int argc, char **argv)
 	if (!philo)
 		return (EXIT_FAILURE);
 
-	// if (create_threads(philo) == false) // this
-	// 	return (clear_philos_rules(philo, rules, -1));
-
-	// if (wait_end_threads(philo) == false)
-	// 	return (clear_philos_rules(philo, rules, -1));
-
 	if (main_threads(philo) == false)
 	{
-		return (clear_philos_rules(philo, rules, -1));
+		destroy_philos(philo, rules->philo_num); // destroy同一関数にできるか試す
+		destroy_rules(rules);
+		return (EXIT_FAILURE);
 	}
 
-
-	clear_philos_rules(philo, rules, 0);
-
+	destroy_philos(philo, rules->philo_num);
+	destroy_rules(rules);
 	return (EXIT_SUCCESS);
 }
