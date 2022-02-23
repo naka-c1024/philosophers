@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/22 08:50:51 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 10:41:25 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct s_philo
 	pthread_mutex_t		mutex;
 	struct s_philo		*left; // 左のphilo, next
 	struct s_philo		*right; // 右のphilo, pre
-	pthread_t			thread_id;
+	pthread_t			thread_id; // これをpthread_createの第一引数に&をつけて渡す
 }			t_philo;
 
 typedef enum e_flag

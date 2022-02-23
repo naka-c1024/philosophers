@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/22 10:28:50 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 11:05:22 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,36 +25,61 @@ t_philo	*free_philo(t_philo *philos, int count)
 	return (NULL);
 }
 
-t_philo	*init_philo(void)
+t_philo	*init_philo(t_rules *rules)
 {
 	t_philo	*philo;
 
 	philo = (t_philo *)malloc(sizeof(t_philo));
 	if (!philo)
 		return (NULL);
+
+	philo->id = 1;
+	philo->right_fork_id = 0;
+	philo->left_fork_id = 1 % rules->philo_num;
+	philo->ate_count = 0;
+	philo->t_last_meal = 0;
+	philo->limit = 0;
+	philo->info = rules;
+	pthread_mutex_init(&(philo->mutex), NULL);
+
 	philo->right = philo;
 	philo->left = philo;
 	return (philo);
 }
 
-t_philo	*create_struct_philo(int philo_num)
+t_philo	*create_philo(t_rules *rules)
 {
 	t_philo	*philo;
 	t_philo	*new;
-	t_philo	*first;
 	int		i;
 
-	philo = init_philo(); // 最初に一人
+	int	num;
+
+	num = 0;
+	while (num < rules->philo_num)
+		pthread_mutex_init(&rules->m_fork[num++], NULL);
+	pthread_mutex_init(&rules->meal_check, NULL);
+	pthread_mutex_init(&rules->mutex, NULL);
+
+	philo = init_philo(rules); // 最初に一人
 	if (!philo)
 		return (NULL);
-	first = philo;
-	philo_num--;
-	i = 0;
-	while (i < philo_num) // 双方好循環リスト作成
+	i = 1;
+	while (i < rules->philo_num) // 双方好循環リスト作成
 	{
 		new = (t_philo *)malloc(sizeof(t_philo));
 		if (new == NULL)
-			return (free_philo(first, i + 1));
+			return (free_philo(philo, i + 1));
+
+		new->id = i + 1;
+		new->right_fork_id = i;
+		new->left_fork_id = (i + 1) % rules->philo_num;
+		new->ate_count = 0;
+		new->t_last_meal = 0;
+		new->limit = 0;
+		new->info = rules;
+		pthread_mutex_init(&(philo->mutex), NULL);
+
 		philo->right->left = new; // 右からphilo作成,最初はphiloのrightはphiloだから左から作成
 		new->right = philo->right;
 		new->left = philo;
@@ -114,39 +139,6 @@ int	clear_philos_rules(t_philo *philo, t_rules *rules, int status)
 		clear_rules(rules);
 	}
 	return (status);
-}
-
-int	init_mutex(t_rules *rules)
-{
-	int	num;
-
-	num = 0;
-	while (num < rules->philo_num)
-		pthread_mutex_init(&rules->m_fork[num++], NULL);
-	pthread_mutex_init(&rules->meal_check, NULL);
-	pthread_mutex_init(&rules->mutex, NULL);
-	return (0);
-}
-
-void	create_philo(t_philo *philo, t_rules *rules)
-{
-	int	i;
-
-	i = 0;
-	init_mutex(rules);
-	while (i < rules->philo_num)
-	{
-		philo->id = i + 1;
-		philo->right_fork_id = i;
-		philo->left_fork_id = (i + 1) % rules->philo_num;
-		philo->ate_count = 0;
-		philo->t_last_meal = 0;
-		philo->limit = 0;
-		philo->info = rules;
-		pthread_mutex_init(&(philo->mutex), NULL);
-		i++;
-		philo = philo->left;
-	}
 }
 
 long long	get_time(void)
@@ -409,16 +401,14 @@ int main(int argc, char **argv)
 	if (!rules)
 		return (EXIT_FAILURE);
 
-	philo = create_struct_philo(rules->philo_num);
+	philo = create_philo(rules);
 	if (philo == NULL)
 		return (clear_philos_rules(philo, rules, -1));
-	create_philo(philo, rules);
 	if (create_threads(philo) == -1)
 		return (clear_philos_rules(philo, rules, -1));
 	if (wait_end_threads(philo) == -1)
 		return (clear_philos_rules(philo, rules, -1));
 	clear_philos_rules(philo, rules, 0);
 
-	// write(1, "all done\n", 9); // debug
 	return (EXIT_SUCCESS);
 }
