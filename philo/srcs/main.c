@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 14:55:30 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 15:17:42 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void	destroy_philos(t_philo *philos, int count)
 	while (count--)
 	{
 		tmp = philos->left; // 左回り
-		// pthread_mutex_destroy(&(philos->mutex));
 		free(philos);
 		philos = tmp;
 	}
@@ -37,7 +36,6 @@ void	destroy_rules(t_rules *rules)
 	}
 	free(rules->m_fork);
 	pthread_mutex_destroy(&rules->meal_check);
-	// pthread_mutex_destroy(&rules->mutex);
 	free(rules);
 }
 
@@ -56,7 +54,6 @@ t_philo	*first_philo(t_rules *rules)
 	philo->t_last_meal = 0;
 	philo->limit = 0;
 	philo->rules = rules;
-	// pthread_mutex_init(&(philo->mutex), NULL);
 
 	philo->right = philo;
 	philo->left = philo;
@@ -75,7 +72,6 @@ t_philo	*create_philo(t_rules *rules)
 	while (num < rules->philo_num)
 		pthread_mutex_init(&rules->m_fork[num++], NULL);
 	pthread_mutex_init(&rules->meal_check, NULL);
-	// pthread_mutex_init(&rules->mutex, NULL);
 
 	philo = first_philo(rules); // 最初に一人
 	if (!philo)
@@ -101,7 +97,6 @@ t_philo	*create_philo(t_rules *rules)
 		new->t_last_meal = 0;
 		new->limit = 0;
 		new->rules = rules;
-		// pthread_mutex_init(&(philo->mutex), NULL);
 
 		philo->right->left = new; // 右からphilo作成,最初はphiloのrightはphiloだから左から作成
 		new->right = philo->right;

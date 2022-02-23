@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 14:54:27 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 15:17:08 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ typedef struct s_rules
 
 	pthread_mutex_t	*m_fork;
 	pthread_mutex_t	meal_check;
-	// pthread_mutex_t	mutex; // 同じの2個あるけど必要?
 	int				die_flg;
 	int				ate; // ateとall_ateとate_countの違いは何?
 	int				all_ate; // ateとall_ateとate_countの違いは何?
@@ -57,7 +56,6 @@ typedef struct s_philo
 	int				ate_count; // ateとall_ateとate_countの違いは何?
 	long long		t_last_meal;
 	long long		limit;
-	// pthread_mutex_t	mutex; // 同じの2個あるけど必要?
 	t_rules			*rules;
 	struct s_philo	*left; // 左のphilo, next
 	struct s_philo	*right; // 右のphilo, pre
