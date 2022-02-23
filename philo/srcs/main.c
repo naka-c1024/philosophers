@@ -6,33 +6,11 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 12:37:15 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 14:36:13 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philosophers.h"
-
-t_philo	*init_philo(t_rules *rules)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *)malloc(sizeof(t_philo));
-	if (!philo)
-		return (NULL);
-
-	philo->id = 1;
-	philo->right_fork_id = 0;
-	philo->left_fork_id = 1 % rules->philo_num;
-	philo->ate_count = 0;
-	philo->t_last_meal = 0;
-	philo->limit = 0;
-	philo->rules = rules;
-	pthread_mutex_init(&(philo->mutex), NULL);
-
-	philo->right = philo;
-	philo->left = philo;
-	return (philo);
-}
 
 void	destroy_philos(t_philo *philos, int count)
 {
@@ -63,6 +41,28 @@ void	destroy_rules(t_rules *rules)
 	free(rules);
 }
 
+t_philo	*first_philo(t_rules *rules)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)malloc(sizeof(t_philo));
+	if (!philo)
+		return (NULL);
+
+	philo->id = 1;
+	philo->right_fork_id = 0;
+	philo->left_fork_id = 1 % rules->philo_num;
+	philo->ate_count = 0;
+	philo->t_last_meal = 0;
+	philo->limit = 0;
+	philo->rules = rules;
+	pthread_mutex_init(&(philo->mutex), NULL);
+
+	philo->right = philo;
+	philo->left = philo;
+	return (philo);
+}
+
 t_philo	*create_philo(t_rules *rules)
 {
 	t_philo	*philo;
@@ -77,7 +77,7 @@ t_philo	*create_philo(t_rules *rules)
 	pthread_mutex_init(&rules->meal_check, NULL);
 	pthread_mutex_init(&rules->mutex, NULL);
 
-	philo = init_philo(rules); // 最初に一人
+	philo = first_philo(rules); // 最初に一人
 	if (!philo)
 	{
 		destroy_rules(rules);
@@ -112,57 +112,6 @@ t_philo	*create_philo(t_rules *rules)
 	return (philo);
 }
 
-void	clear_rules(t_rules *rules)
-{
-	int	i;
-
-	if (rules->m_fork)
-	{
-		i = 0;
-		while (i < rules->philo_num)
-		{
-			pthread_mutex_destroy(&rules->m_fork[i++]);
-		}
-		free(rules->m_fork);
-	}
-	pthread_mutex_destroy(&rules->meal_check);
-	pthread_mutex_destroy(&rules->mutex);
-	free(rules);
-}
-
-void	clear_philos(t_philo *philos)
-{
-	t_philo		*tmp;
-	int			i;
-	int			philo_num;
-
-	i = 0;
-	philo_num = philos->rules->philo_num;
-	while (i++ < philo_num)
-	{
-		tmp = philos->left;
-		pthread_mutex_destroy(&(philos->mutex));
-		free(philos);
-		philos = tmp;
-	}
-}
-
-// This function is used many times.
-int	clear_philos_rules(t_philo *philo, t_rules *rules, int status)
-{
-	if (philo == NULL) // 一人目のphiloを作る段階で失敗した場合
-	{
-		free(rules->m_fork);
-		free(rules);
-	}
-	else
-	{
-		clear_philos(philo);
-		clear_rules(rules);
-	}
-	return (status);
-}
-
 long long	get_time(void)
 {
 	struct timeval	tv;
@@ -184,7 +133,7 @@ int	check_all_ate(t_philo *philo)
 	return (0);
 }
 
-void	put_message(long time, int philo_id, char *type)
+void	show_log(long time, int philo_id, char *type)
 {
 	printf("%ld %d %s\n", time, philo_id, type);
 }
@@ -194,7 +143,7 @@ int	check_limit(t_philo *philo)
 	if (get_time() >= philo->limit)
 	{
 		philo->rules->die_flg = 1;
-		put_message(get_time(), philo->id, SHOW_DIED);
+		show_log(get_time(), philo->id, SHOW_DIED);
 		return (1);
 	}
 	return (0);
@@ -261,7 +210,7 @@ int	get_left_fork(t_philo *philo)
 		pthread_mutex_unlock(&philo->rules->m_fork[lfork]);
 		return (-1);
 	}
-	put_message(get_time(), philo->id, SHOW_FORK);
+	show_log(get_time(), philo->id, SHOW_FORK);
 	pthread_mutex_unlock(&philo->rules->meal_check);
 	return (0);
 }
@@ -278,7 +227,7 @@ int	get_right_fork(t_philo *philo)
 		pthread_mutex_unlock(&philo->rules->m_fork[rfork]);
 		return (-1);
 	}
-	put_message(get_time(), philo->id, SHOW_FORK);
+	show_log(get_time(), philo->id, SHOW_FORK);
 	pthread_mutex_unlock(&philo->rules->meal_check);
 	return (0);
 }
@@ -326,7 +275,7 @@ int	eat(t_philo *philo)
 	if (ate_dieflg_check(philo, EAT) == -1)
 		return (-1);
 	eattime_set(philo);
-	put_message(philo->t_last_meal, philo->id, SHOW_EAT);
+	show_log(philo->t_last_meal, philo->id, SHOW_EAT);
 	pthread_mutex_unlock(&philo->rules->meal_check);
 	adjustment_sleep(get_time() + philo->rules->eat_time);
 	philo->ate_count += 1;
@@ -339,7 +288,7 @@ int	philo_sleep(t_philo *philo)
 	pthread_mutex_lock(&philo->rules->meal_check);
 	if (ate_dieflg_check(philo, SLEEP) == -1)
 		return (-1);
-	put_message(get_time(), philo->id, SHOW_SLEEP);
+	show_log(get_time(), philo->id, SHOW_SLEEP);
 	pthread_mutex_unlock(&philo->rules->meal_check);
 	adjustment_sleep(get_time() + philo->rules->sleep_time);
 	return (0);
@@ -350,7 +299,7 @@ int	think(t_philo *philo)
 	pthread_mutex_lock(&philo->rules->meal_check);
 	if (ate_dieflg_check(philo, THINK) == -1)
 		return (-1);
-	put_message(get_time(), philo->id, SHOW_THINK);
+	show_log(get_time(), philo->id, SHOW_THINK);
 	pthread_mutex_unlock(&philo->rules->meal_check);
 	return (0);
 }
@@ -363,9 +312,9 @@ void	*philo_action(void *void_philo)
 	philo = (t_philo *)void_philo;
 	if (philo->id % 2 == 0)
 		usleep(1000);
-	if (pthread_create(&tid, NULL, monitor, void_philo) != 0)
+	if (pthread_create(&tid, NULL, monitor, void_philo))
 		return (NULL);
-	while (1) // this
+	while (1)
 	{
 		if (get_forks(philo) == -1 \
 		|| eat(philo) == -1 \
@@ -420,7 +369,7 @@ int main(int argc, char **argv)
 
 	if (main_threads(philo) == false)
 	{
-		destroy_philos(philo, rules->philo_num); // destroy同一関数にできるか試す
+		destroy_philos(philo, rules->philo_num);
 		destroy_rules(rules);
 		return (EXIT_FAILURE);
 	}

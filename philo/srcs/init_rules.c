@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 11:11:25 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/22 08:52:23 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 14:40:58 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ t_rules	*init_rules(int argc, char **argv)
 	rules->die_flg = 0;
 	rules->ate = 0;
 	rules->all_ate = 0;
-	rules->first_timestamp = 0;
 
 	return (rules);
 }

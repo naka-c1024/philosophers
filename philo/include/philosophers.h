@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 12:00:44 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 14:40:51 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ typedef struct s_rules
 	int	sleep_time;
 	int	ate_num;
 
-	long long			first_timestamp;
 	pthread_mutex_t		*m_fork;
 	pthread_mutex_t		meal_check;
 	pthread_mutex_t		mutex;
