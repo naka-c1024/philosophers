@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 15:17:08 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:34:06 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # define SHOW_THINK "is thinking"
 # define SHOW_DIED "died"
 
-typedef struct s_rules
+typedef struct s_share
 {
 	int	philo_num;
 	int	die_time;
@@ -42,10 +42,10 @@ typedef struct s_rules
 
 	pthread_mutex_t	*m_fork;
 	pthread_mutex_t	meal_check;
-	int				die_flg;
-	int				ate; // ateとall_ateとate_countの違いは何?
-	int				all_ate; // ateとall_ateとate_countの違いは何?
-}	t_rules;
+	int				equal_ate_times; // ate_numと同じ回数になった場合加算される
+	int				all_ate_flg; // 回数分食べたかどうか
+	int				die_flg; // 死んだかどうか
+}	t_share;
 
 typedef struct s_philo
 {
@@ -53,10 +53,10 @@ typedef struct s_philo
 	pthread_t		thread_id; // これをpthread_createの第一引数に&をつけて渡す
 	int				left_fork_id;
 	int				right_fork_id;
-	int				ate_count; // ateとall_ateとate_countの違いは何?
+	int				ate_count; // 何回食べたか
 	long long		t_last_meal;
 	long long		limit;
-	t_rules			*rules;
+	t_share			*share;
 	struct s_philo	*left; // 左のphilo, next
 	struct s_philo	*right; // 右のphilo, pre
 }			t_philo;
@@ -79,6 +79,6 @@ bool	check_arg(int argc, char **argv);
 
 // init_rules.c
 int		ft_atoi(const char *str);
-t_rules	*init_rules(int argc, char **argv);
+t_share	*init_rules(int argc, char **argv);
 
 #endif

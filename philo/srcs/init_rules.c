@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 11:11:25 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 14:40:58 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 17:34:06 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,31 +58,31 @@ int	ft_atoi(const char *str)
 	return (ans * sign);
 }
 
-t_rules	*init_rules(int argc, char **argv)
+t_share	*init_rules(int argc, char **argv)
 {
-	t_rules	*rules;
+	t_share	*share;
 
-	rules = (t_rules *)malloc(sizeof(t_rules));
-	if (!rules)
+	share = (t_share *)malloc(sizeof(t_share));
+	if (!share)
 		return (NULL);
-	rules->philo_num = ft_atoi(argv[1]);
-	rules->die_time = ft_atoi(argv[2]);
-	rules->eat_time = ft_atoi(argv[3]);
-	rules->sleep_time = ft_atoi(argv[4]);
+	share->philo_num = ft_atoi(argv[1]);
+	share->die_time = ft_atoi(argv[2]);
+	share->eat_time = ft_atoi(argv[3]);
+	share->sleep_time = ft_atoi(argv[4]);
 	if (argc == 6)
-		rules->ate_num = ft_atoi(argv[5]);
+		share->ate_num = ft_atoi(argv[5]);
 	else
-		rules->ate_num = -1;
+		share->ate_num = -1;
 
-	rules->m_fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * rules->philo_num);
-	if (rules->m_fork == NULL)
+	share->m_fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * share->philo_num);
+	if (share->m_fork == NULL)
 	{
-		free(rules);
+		free(share);
 		return (NULL);
 	}
-	rules->die_flg = 0;
-	rules->ate = 0;
-	rules->all_ate = 0;
+	share->die_flg = 0;
+	share->equal_ate_times = 0;
+	share->all_ate_flg = 0;
 
-	return (rules);
+	return (share);
 }
