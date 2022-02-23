@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 11:40:27 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 12:12:57 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -356,7 +356,7 @@ int	think(t_philo *philo)
 	return (0);
 }
 
-void	*philosopher(void *void_philo) // change name -> philo_act
+void	*philo_action(void *void_philo)
 {
 	pthread_t	tid;
 	t_philo		*philo;
@@ -379,39 +379,44 @@ void	*philosopher(void *void_philo) // change name -> philo_act
 	return (NULL);
 }
 
-int	create_threads(t_philo *philo)
+bool	main_threads(t_philo *philo)
 {
-	int	i;
 	int	philo_num;
+	int	i;
 
 	philo_num = philo->rules->philo_num;
 	i = 0;
 	while (i < philo_num)
 	{
-		if (pthread_create(&(philo->thread_id), NULL, philosopher, (void *)philo) != 0)
-			return (-1);
+		if (pthread_create(&(philo->thread_id), NULL, philo_action, (void *)philo))
+			return (false);
 		philo = philo->left;
 		i++;
 	}
-	return (0);
-}
 
-int	wait_end_threads(t_philo *philo)
-{
-	int	i;
-	int	philo_num;
-
-	philo_num = philo->rules->philo_num;
-	i = 0;
-	while (i < philo_num)
+	while (philo_num--)
 	{
-		if (pthread_join(philo->thread_id, NULL) != 0)
-			return (-1);
+		if (pthread_join(philo->thread_id, NULL))
+			return (false);
 		philo = philo->left;
-		i++;
 	}
-	return (0);
+
+	return (true);
 }
+
+// bool	wait_end_threads(t_philo *philo)
+// {
+// 	int	philo_num;
+
+// 	philo_num = philo->rules->philo_num;
+// 	while (philo_num--)
+// 	{
+// 		if (pthread_join(philo->thread_id, NULL))
+// 			return (false);
+// 		philo = philo->left;
+// 	}
+// 	return (true);
+// }
 
 int main(int argc, char **argv)
 {
@@ -428,11 +433,17 @@ int main(int argc, char **argv)
 	if (!philo)
 		return (EXIT_FAILURE);
 
-	if (create_threads(philo) == -1)
-		return (clear_philos_rules(philo, rules, -1));
+	// if (create_threads(philo) == false) // this
+	// 	return (clear_philos_rules(philo, rules, -1));
 
-	if (wait_end_threads(philo) == -1)
+	// if (wait_end_threads(philo) == false)
+	// 	return (clear_philos_rules(philo, rules, -1));
+
+	if (main_threads(philo) == false)
+	{
 		return (clear_philos_rules(philo, rules, -1));
+	}
+
 
 	clear_philos_rules(philo, rules, 0);
 

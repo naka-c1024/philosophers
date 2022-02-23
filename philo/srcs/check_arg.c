@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 08:51:15 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/14 08:51:51 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 12:03:11 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	show_help(void)
 {
-	printf("Usage: ./philo num die eat sleep [ate]\n\n");
+	printf(COLOR_R"Invalid argument"COLOR_OFF);
+	printf("\nUsage: ./philo num die eat sleep [ate]\n\n");
 	printf("\tnum:\tnumber_of_philosophers\n");
 	printf("\tdie:\ttime_to_die\n");
 	printf("\teat:\ttime_to_eat\n");

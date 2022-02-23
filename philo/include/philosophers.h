@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 11:18:34 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 12:00:44 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,21 +23,14 @@
 # include <limits.h> // macro
 # include <stdint.h> // macro(linux)
 
+# define COLOR_R	"\033[41m"
+# define COLOR_OFF	"\033[m"
+
 # define SHOW_FORK "has taken a fork"
 # define SHOW_EAT "is eating"
 # define SHOW_SLEEP "is sleeping"
 # define SHOW_THINK "is thinking"
 # define SHOW_DIED "died"
-
-# define RESET "\033[0m"
-# define BLACK "\033[30m"
-# define RED "\033[31m"
-# define GREEN "\033[32m"
-# define YELLOW "\033[33m"
-# define BLUE "\033[34m"
-# define MAGENTA "\033[35m"
-# define CYAN "\033[36m"
-# define WHITE "\033[37m"
 
 typedef struct s_rules
 {
