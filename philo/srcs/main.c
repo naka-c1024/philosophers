@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 15:17:42 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 15:37:55 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,9 +128,9 @@ int	check_all_ate(t_philo *philo)
 	return (0);
 }
 
-void	show_log(long time, int philo_id, char *type)
+void	show_log(long time, int philo_id, char *log_msg)
 {
-	printf("%ld %d %s\n", time, philo_id, type);
+	printf("%ld %d %s\n", time, philo_id, log_msg);
 }
 
 int	check_limit(t_philo *philo)
@@ -195,14 +195,14 @@ int	ate_dieflg_check(t_philo *philo, int type)
 
 int	get_left_fork(t_philo *philo)
 {
-	int	lfork;
+	int	left_fork;
 
-	lfork = philo->left_fork_id;
-	pthread_mutex_lock(&philo->rules->m_fork[lfork]);
+	left_fork = philo->left_fork_id;
+	pthread_mutex_lock(&philo->rules->m_fork[left_fork]);
 	pthread_mutex_lock(&philo->rules->meal_check);
 	if (ate_dieflg_check(philo, FORK) == -1)
 	{
-		pthread_mutex_unlock(&philo->rules->m_fork[lfork]);
+		pthread_mutex_unlock(&philo->rules->m_fork[left_fork]);
 		return (-1);
 	}
 	show_log(get_time(), philo->id, SHOW_FORK);
@@ -212,14 +212,14 @@ int	get_left_fork(t_philo *philo)
 
 int	get_right_fork(t_philo *philo)
 {
-	int	rfork;
+	int	right_fork;
 
-	rfork = philo->right_fork_id;
-	pthread_mutex_lock(&philo->rules->m_fork[rfork]);
+	right_fork = philo->right_fork_id;
+	pthread_mutex_lock(&philo->rules->m_fork[right_fork]);
 	pthread_mutex_lock(&philo->rules->meal_check);
 	if (ate_dieflg_check(philo, FORK) == -1)
 	{
-		pthread_mutex_unlock(&philo->rules->m_fork[rfork]);
+		pthread_mutex_unlock(&philo->rules->m_fork[right_fork]);
 		return (-1);
 	}
 	show_log(get_time(), philo->id, SHOW_FORK);
@@ -227,7 +227,7 @@ int	get_right_fork(t_philo *philo)
 	return (0);
 }
 
-int	get_forks(t_philo *philo)
+int	get_forks(t_philo *philo) // this
 {
 	if (get_left_fork(philo) == -1)
 		return (-1);
@@ -237,12 +237,6 @@ int	get_forks(t_philo *philo)
 		return (-1);
 	}
 	return (0);
-}
-
-void	eattime_set(t_philo *philo)
-{
-	philo->t_last_meal = get_time();
-	philo->limit = philo->t_last_meal + philo->rules->die_time;
 }
 
 void	adjustment_sleep(long long end)
@@ -258,23 +252,29 @@ void	adjustment_sleep(long long end)
 	}
 }
 
-void	check_eat_count(t_philo *philo)
-{
-	if (philo->ate_count == philo->rules->ate_num)
-		philo->rules->ate += 1;
-}
+// void	check_eat_count(t_philo *philo)
+// {
+// 	if (philo->ate_count == philo->rules->ate_num)
+// 		philo->rules->ate += 1;
+// }
 
 int	eat(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->rules->meal_check);
 	if (ate_dieflg_check(philo, EAT) == -1)
 		return (-1);
-	eattime_set(philo);
+
+	philo->t_last_meal = get_time();
+	philo->limit = philo->t_last_meal + philo->rules->die_time;
+
 	show_log(philo->t_last_meal, philo->id, SHOW_EAT);
 	pthread_mutex_unlock(&philo->rules->meal_check);
 	adjustment_sleep(get_time() + philo->rules->eat_time);
 	philo->ate_count += 1;
-	check_eat_count(philo);
+	// check_eat_count(philo);
+
+	if (philo->ate_count == philo->rules->ate_num)
+		philo->rules->ate += 1;
 	return (0);
 }
 
