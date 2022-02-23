@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 17:34:06 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 21:31:06 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_share
 
 	pthread_mutex_t	*m_fork;
 	pthread_mutex_t	meal_check;
-	int				equal_ate_times; // ate_numと同じ回数になった場合加算される
+	int				equal_ate_cnt; // ate_numと同じ回数になった場合加算される
 	int				all_ate_flg; // 回数分食べたかどうか
 	int				die_flg; // 死んだかどうか
 }	t_share;
@@ -54,8 +54,8 @@ typedef struct s_philo
 	int				left_fork_id;
 	int				right_fork_id;
 	int				ate_count; // 何回食べたか
-	long long		t_last_meal;
-	long long		limit;
+	long			t_last_meal;
+	long			limit;
 	t_share			*share;
 	struct s_philo	*left; // 左のphilo, next
 	struct s_philo	*right; // 右のphilo, pre
@@ -77,8 +77,8 @@ int		ft_isdigit(int c);
 bool	is_uint(char *str);
 bool	check_arg(int argc, char **argv);
 
-// init_rules.c
+// init_share.c
 int		ft_atoi(const char *str);
-t_share	*init_rules(int argc, char **argv);
+t_share	*init_share(int argc, char **argv);
 
 #endif

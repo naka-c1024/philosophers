@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 17:37:02 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/23 21:41:59 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,8 @@ t_philo	*create_philo(t_share *share)
 	return (philo);
 }
 
-long long	get_time(void)
+// 1s = 1000ms, 1micros = 1/1000ms
+long	get_time(void)
 {
 	struct timeval	tv;
 
@@ -117,7 +118,7 @@ long long	get_time(void)
 
 int	check_all_ate(t_philo *philo)
 {
-	if (philo->share->equal_ate_times == philo->share->philo_num) // 全員が回数分食べ終わったかどうか
+	if (philo->share->equal_ate_cnt == philo->share->philo_num) // 全員が回数分食べ終わったかどうか
 	{
 		philo->share->all_ate_flg = 1;
 		return (1);
@@ -235,9 +236,9 @@ int	get_forks(t_philo *philo)
 	return (0);
 }
 
-void	adjustment_sleep(long long end)
+void	adjustment_sleep(long end)
 {
-	long long	now;
+	long	now;
 
 	while (1)
 	{
@@ -263,7 +264,7 @@ int	eat(t_philo *philo)
 	philo->ate_count += 1; // 何回食べたか
 
 	if (philo->ate_count == philo->share->ate_num) // 回数分食べ切ったらateに加算する
-		philo->share->equal_ate_times += 1;
+		philo->share->equal_ate_cnt += 1;
 	return (0);
 }
 
@@ -290,13 +291,13 @@ int	think(t_philo *philo)
 
 void	*philo_action(void *void_philo)
 {
-	pthread_t	tid;
+	pthread_t	monitor_id;
 	t_philo		*philo;
 
 	philo = (t_philo *)void_philo;
 	if (philo->id % 2 == 0)
 		usleep(1000);
-	if (pthread_create(&tid, NULL, monitor, void_philo))
+	if (pthread_create(&monitor_id, NULL, monitor, void_philo))
 		return (NULL);
 	while (1)
 	{
@@ -307,7 +308,7 @@ void	*philo_action(void *void_philo)
 		|| think(philo) == -1)
 			break ;
 	}
-	pthread_join(tid, NULL);
+	pthread_join(monitor_id, NULL);
 	return (NULL);
 }
 
@@ -343,7 +344,7 @@ int main(int argc, char **argv)
 
 	if (check_arg(argc, argv) == false)
 		return (EXIT_SUCCESS);
-	share = init_rules(argc, argv);
+	share = init_share(argc, argv);
 	if (!share)
 		return (EXIT_FAILURE);
 

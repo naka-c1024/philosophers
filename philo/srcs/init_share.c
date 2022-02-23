@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_rules.c                                       :+:      :+:    :+:   */
+/*   init_share.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/14 11:11:25 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 17:34:06 by ynakashi         ###   ########.fr       */
+/*   Created: 2022/02/23 21:30:22 by ynakashi          #+#    #+#             */
+/*   Updated: 2022/02/23 21:30:24 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	ft_atoi(const char *str)
 	return (ans * sign);
 }
 
-t_share	*init_rules(int argc, char **argv)
+t_share	*init_share(int argc, char **argv)
 {
 	t_share	*share;
 
@@ -81,7 +81,7 @@ t_share	*init_rules(int argc, char **argv)
 		return (NULL);
 	}
 	share->die_flg = 0;
-	share->equal_ate_times = 0;
+	share->equal_ate_cnt = 0;
 	share->all_ate_flg = 0;
 
 	return (share);
