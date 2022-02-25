@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 21:31:06 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/25 15:30:09 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ typedef struct s_philo
 	int				left_fork_id;
 	int				right_fork_id;
 	int				ate_count; // 何回食べたか
-	long			t_last_meal;
-	long			limit;
+	long			exact_time; // get_time()を2回使う関数はこれに入れて時刻の不整合を無くす
+	long			die_limit_time; // exact_timeとdie_timeを足し合わせた時刻
 	t_share			*share;
 	struct s_philo	*left; // 左のphilo, next
 	struct s_philo	*right; // 右のphilo, pre

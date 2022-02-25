@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 21:41:59 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/25 15:29:45 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ t_philo	*first_philo(t_share *share)
 	philo->right_fork_id = 0;
 	philo->left_fork_id = 1 % share->philo_num;
 	philo->ate_count = 0;
-	philo->t_last_meal = 0;
-	philo->limit = 0;
+	philo->exact_time = 0;
+	philo->die_limit_time = 0;
 	philo->share = share;
 
 	philo->right = philo;
@@ -94,8 +94,8 @@ t_philo	*create_philo(t_share *share)
 		new->right_fork_id = i;
 		new->left_fork_id = (i + 1) % share->philo_num;
 		new->ate_count = 0;
-		new->t_last_meal = 0;
-		new->limit = 0;
+		new->exact_time = 0;
+		new->die_limit_time = 0;
 		new->share = share;
 
 		philo->right->left = new; // 右からphilo作成,最初はphiloのrightはphiloだから左から作成
@@ -133,7 +133,7 @@ void	show_log(long time, int philo_id, char *log_msg)
 
 int	check_limit(t_philo *philo)
 {
-	if (get_time() >= philo->limit)
+	if (get_time() >= philo->die_limit_time)
 	{
 		philo->share->die_flg = 1;
 		show_log(get_time(), philo->id, SHOW_DIED);
@@ -154,13 +154,13 @@ int	put_forks(t_philo *philo)
 	return (0);
 }
 
-void	*monitor(void *void_philo)
+void	*monitor(void *param)
 {
 	t_philo	*philo;
 
-	philo = (t_philo *)void_philo;
-	philo->t_last_meal = get_time();
-	philo->limit = philo->t_last_meal + philo->share->die_time;
+	philo = (t_philo *)param;
+	philo->exact_time = get_time();
+	philo->die_limit_time = philo->exact_time + philo->share->die_time;
 	while (1)
 	{
 		pthread_mutex_lock(&philo->share->meal_check);
@@ -255,10 +255,10 @@ int	eat(t_philo *philo)
 	if (ate_dieflg_check(philo, EAT) == -1)
 		return (-1);
 
-	philo->t_last_meal = get_time();
-	philo->limit = philo->t_last_meal + philo->share->die_time;
+	philo->exact_time = get_time();
+	philo->die_limit_time = philo->exact_time + philo->share->die_time;
 
-	show_log(philo->t_last_meal, philo->id, SHOW_EAT);
+	show_log(philo->exact_time, philo->id, SHOW_EAT);
 	pthread_mutex_unlock(&philo->share->meal_check);
 	adjustment_sleep(get_time() + philo->share->eat_time);
 	philo->ate_count += 1; // 何回食べたか
@@ -289,15 +289,15 @@ int	think(t_philo *philo)
 	return (0);
 }
 
-void	*philo_action(void *void_philo)
+void	*philo_action(void *param)
 {
 	pthread_t	monitor_id;
 	t_philo		*philo;
 
-	philo = (t_philo *)void_philo;
+	philo = (t_philo *)param;
 	if (philo->id % 2 == 0)
 		usleep(1000);
-	if (pthread_create(&monitor_id, NULL, monitor, void_philo))
+	if (pthread_create(&monitor_id, NULL, monitor, param))
 		return (NULL);
 	while (1)
 	{
