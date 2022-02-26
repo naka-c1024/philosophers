@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 14:47:20 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 14:59:20 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_share
 	int	ate_num;
 
 	pthread_mutex_t	*m_fork;
-	pthread_mutex_t	meal_check; // A variable to prevent the share variables from being updated at the same time., change name share_var_lock
+	pthread_mutex_t	lock_share_var; // A variable to prevent the share variables from being updated at the same time.
 	int				equal_ate_cnt; // ate_numと同じ回数になった場合加算される
 	int				full_stomach_flg; // 回数分食べたかどうか
 	int				starving_flg; // 死んだかどうか
