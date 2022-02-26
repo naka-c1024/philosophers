@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 12:12:58 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 14:52:25 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,11 @@ long	get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
+void	show_log(long time, int philo_id, char *log_msg)
+{
+	printf("%ld %d %s\n", time, philo_id, log_msg);
+}
+
 int	check_full_stomach(t_philo *philo)
 {
 	if (philo->share->equal_ate_cnt == philo->share->philo_num) // 全員が回数分食べ終わったかどうか
@@ -124,12 +129,7 @@ int	check_full_stomach(t_philo *philo)
 	return (0);
 }
 
-void	show_log(long time, int philo_id, char *log_msg)
-{
-	printf("%ld %d %s\n", time, philo_id, log_msg);
-}
-
-int	check_limit(t_philo *philo)
+int	check_starving(t_philo *philo)
 {
 	if (get_time() >= philo->die_limit_time)
 	{
@@ -167,7 +167,7 @@ void	*monitor(void *param)
 			break ;
 		if (check_full_stomach(philo))
 			break ;
-		if (check_limit(philo))
+		if (check_starving(philo))
 			break ;
 		pthread_mutex_unlock(&philo->share->meal_check);
 		usleep(1000);
@@ -177,9 +177,9 @@ void	*monitor(void *param)
 	return (NULL);
 }
 
-int	check_starving(t_philo *philo, int type)
+int	check_flg(t_philo *philo, int type)
 {
-	if (philo->share->full_stomach_flg == 1 || philo->share->starving_flg == 1)
+	if (philo->share->full_stomach_flg || philo->share->starving_flg)
 	{
 		if (type == EAT)
 			put_forks(philo);
@@ -194,9 +194,9 @@ int	get_left_fork(t_philo *philo)
 	int	left_fork;
 
 	left_fork = philo->left_fork_id;
-	pthread_mutex_lock(&philo->share->m_fork[left_fork]);
+	pthread_mutex_lock(&philo->share->m_fork[left_fork]); // ここの順番入れ替えるだけでなぜか死ぬようになる
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (check_starving(philo, FORK) == -1)
+	if (check_flg(philo, FORK) == -1)
 	{
 		pthread_mutex_unlock(&philo->share->m_fork[left_fork]);
 		return (-1);
@@ -213,7 +213,7 @@ int	get_right_fork(t_philo *philo)
 	right_fork = philo->right_fork_id;
 	pthread_mutex_lock(&philo->share->m_fork[right_fork]);
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (check_starving(philo, FORK) == -1)
+	if (check_flg(philo, FORK) == -1)
 	{
 		pthread_mutex_unlock(&philo->share->m_fork[right_fork]);
 		return (-1);
@@ -241,7 +241,7 @@ int	eat(t_philo *philo)
 	long	end_time;
 
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (check_starving(philo, EAT) == -1)
+	if (check_flg(philo, EAT) == -1)
 		return (-1);
 
 	exact_time = get_time();
@@ -273,7 +273,7 @@ int	philo_sleep(t_philo *philo)
 	long	end_time;
 
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (check_starving(philo, SLEEP) == -1)
+	if (check_flg(philo, SLEEP) == -1)
 		return (-1);
 	exact_time = get_time();
 	show_log(exact_time, philo->id, SHOW_SLEEP);
@@ -296,7 +296,7 @@ int	philo_sleep(t_philo *philo)
 int	think(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (check_starving(philo, THINK) == -1)
+	if (check_flg(philo, THINK) == -1)
 		return (-1);
 	show_log(get_time(), philo->id, SHOW_THINK);
 	pthread_mutex_unlock(&philo->share->meal_check);
