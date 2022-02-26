@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 15:17:04 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 15:45:35 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,8 @@ void	*monitor(void *param)
 		if (check_starving(philo))
 			break ;
 		pthread_mutex_unlock(&philo->share->lock_share_var);
-		usleep(1000);
+		// usleep(1000);
+		usleep(100); // guacamoleだと100で"200 410 200 200"が生き延びた
 	}
 	put_forks(philo); // これ必要?
 	pthread_mutex_unlock(&philo->share->lock_share_var);
