@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 15:45:35 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 16:04:13 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,9 +162,9 @@ void	*monitor(void *param)
 	philo->die_limit_time = exact_time + philo->share->die_time;
 	while (1)
 	{
+		pthread_mutex_lock(&philo->share->lock_share_var);
 		if (philo->share->starving_flg || philo->share->full_stomach_flg)
 			break ;
-		pthread_mutex_lock(&philo->share->lock_share_var);
 		if (check_full_stomach(philo))
 			break ;
 		if (check_starving(philo))
@@ -257,12 +257,16 @@ int	eat(t_philo *philo)
 	end_time = exact_time + philo->share->eat_time;
 	while (1)
 	{
-		if (philo->share->starving_flg || philo->share->full_stomach_flg)
-			break ;
+		pthread_mutex_lock(&philo->share->lock_share_var);
+		if (check_flg(philo, EAT) == -1)
+			return (-1);
+		pthread_mutex_unlock(&philo->share->lock_share_var);
+
 		exact_time = get_time();
 		if (exact_time >= end_time)
 			break ;
-		usleep(1000);
+		// usleep(1000); // ここは100じゃなくてもいいのか?
+		usleep(100); // ここは100じゃなくてもいいのか?
 	}
 	return (0);
 }
@@ -282,12 +286,16 @@ int	philo_sleep(t_philo *philo)
 	end_time = exact_time + philo->share->eat_time;
 	while (1)
 	{
-		if (philo->share->starving_flg || philo->share->full_stomach_flg)
-			break ;
+		pthread_mutex_lock(&philo->share->lock_share_var);
+		if (check_flg(philo, SLEEP) == -1)
+			return (-1);
+		pthread_mutex_unlock(&philo->share->lock_share_var);
+
 		exact_time = get_time();
 		if (exact_time >= end_time)
 			break ;
-		usleep(1000);
+		// usleep(1000); // ここは100じゃなくてもいいのか?
+		usleep(100); // ここは100じゃなくてもいいのか?
 	}
 
 	return (0);
