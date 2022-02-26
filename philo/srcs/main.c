@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 11:44:26 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 12:12:58 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ t_philo	*first_philo(t_share *share)
 	philo->right_fork_id = 0;
 	philo->left_fork_id = 1 % share->philo_num;
 	philo->ate_count = 0;
-	philo->exact_time = 0;
 	philo->die_limit_time = 0;
 	philo->share = share;
 
@@ -94,7 +93,6 @@ t_philo	*create_philo(t_share *share)
 		new->right_fork_id = i;
 		new->left_fork_id = (i + 1) % share->philo_num;
 		new->ate_count = 0;
-		new->exact_time = 0;
 		new->die_limit_time = 0;
 		new->share = share;
 
@@ -157,10 +155,11 @@ int	put_forks(t_philo *philo)
 void	*monitor(void *param)
 {
 	t_philo	*philo;
+	long	exact_time;
 
 	philo = (t_philo *)param;
-	philo->exact_time = get_time();
-	philo->die_limit_time = philo->exact_time + philo->share->die_time;
+	exact_time = get_time();
+	philo->die_limit_time = exact_time + philo->share->die_time;
 	while (1)
 	{
 		pthread_mutex_lock(&philo->share->meal_check);
@@ -236,38 +235,32 @@ int	get_forks(t_philo *philo)
 	return (0);
 }
 
-void	adjustment_sleep(long end)
-{
-	long	now;
-
-	while (1)
-	{
-		// if (starving_flg || full_stomach_flg)
-		// {
-		// 	break ;
-		// }
-
-		now = get_time();
-		if (now >= end)
-			break ;
-		usleep(1000);
-	}
-}
-
 int	eat(t_philo *philo)
 {
+	long	exact_time;
+	long	end_time;
+
 	pthread_mutex_lock(&philo->share->meal_check);
 	if (check_starving(philo, EAT) == -1)
 		return (-1);
 
-	philo->exact_time = get_time();
-	philo->die_limit_time = philo->exact_time + philo->share->die_time;
+	exact_time = get_time();
+	philo->die_limit_time = exact_time + philo->share->die_time;
 
-	show_log(philo->exact_time, philo->id, SHOW_EAT);
+	show_log(exact_time, philo->id, SHOW_EAT);
 	pthread_mutex_unlock(&philo->share->meal_check);
-	// adjustment_sleep(get_time() + philo->share->eat_time);
-	adjustment_sleep(philo->exact_time + philo->share->eat_time);
 	philo->ate_count += 1; // 何回食べたか
+
+	end_time = exact_time + philo->share->eat_time;
+	while (1)
+	{
+		if (philo->share->starving_flg || philo->share->full_stomach_flg)
+			break ;
+		exact_time = get_time();
+		if (exact_time >= end_time)
+			break ;
+		usleep(1000);
+	}
 
 	if (philo->ate_count == philo->share->ate_num) // 回数分食べ切ったらateに加算する
 		philo->share->equal_ate_cnt += 1;
@@ -276,15 +269,27 @@ int	eat(t_philo *philo)
 
 int	philo_sleep(t_philo *philo)
 {
+	long	exact_time;
+	long	end_time;
+
 	pthread_mutex_lock(&philo->share->meal_check);
 	if (check_starving(philo, SLEEP) == -1)
 		return (-1);
-	philo->exact_time = get_time();
-	// show_log(get_time(), philo->id, SHOW_SLEEP);
-	show_log(philo->exact_time, philo->id, SHOW_SLEEP);
+	exact_time = get_time();
+	show_log(exact_time, philo->id, SHOW_SLEEP);
 	pthread_mutex_unlock(&philo->share->meal_check);
-	// adjustment_sleep(get_time() + philo->share->sleep_time);
-	adjustment_sleep(philo->exact_time + philo->share->sleep_time);
+
+	end_time = exact_time + philo->share->eat_time;
+	while (1)
+	{
+		if (philo->share->starving_flg || philo->share->full_stomach_flg)
+			break ;
+		exact_time = get_time();
+		if (exact_time >= end_time)
+			break ;
+		usleep(1000);
+	}
+
 	return (0);
 }
 
