@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 21:30:22 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 21:30:24 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 11:13:42 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,9 @@ t_share	*init_share(int argc, char **argv)
 		free(share);
 		return (NULL);
 	}
-	share->die_flg = 0;
+	share->starving_flg = 0;
 	share->equal_ate_cnt = 0;
-	share->all_ate_flg = 0;
+	share->full_stomach_flg = 0;
 
 	return (share);
 }

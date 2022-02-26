@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/25 15:29:45 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 11:44:26 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,11 +116,11 @@ long	get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-int	check_all_ate(t_philo *philo)
+int	check_full_stomach(t_philo *philo)
 {
 	if (philo->share->equal_ate_cnt == philo->share->philo_num) // 全員が回数分食べ終わったかどうか
 	{
-		philo->share->all_ate_flg = 1;
+		philo->share->full_stomach_flg = 1;
 		return (1);
 	}
 	return (0);
@@ -135,7 +135,7 @@ int	check_limit(t_philo *philo)
 {
 	if (get_time() >= philo->die_limit_time)
 	{
-		philo->share->die_flg = 1;
+		philo->share->starving_flg = 1;
 		show_log(get_time(), philo->id, SHOW_DIED);
 		return (1);
 	}
@@ -164,9 +164,9 @@ void	*monitor(void *param)
 	while (1)
 	{
 		pthread_mutex_lock(&philo->share->meal_check);
-		if (philo->share->die_flg || philo->share->all_ate_flg)
+		if (philo->share->starving_flg || philo->share->full_stomach_flg)
 			break ;
-		if (check_all_ate(philo))
+		if (check_full_stomach(philo))
 			break ;
 		if (check_limit(philo))
 			break ;
@@ -178,9 +178,9 @@ void	*monitor(void *param)
 	return (NULL);
 }
 
-int	ate_dieflg_check(t_philo *philo, int type)
+int	check_starving(t_philo *philo, int type)
 {
-	if (philo->share->all_ate_flg == 1 || philo->share->die_flg == 1)
+	if (philo->share->full_stomach_flg == 1 || philo->share->starving_flg == 1)
 	{
 		if (type == EAT)
 			put_forks(philo);
@@ -197,7 +197,7 @@ int	get_left_fork(t_philo *philo)
 	left_fork = philo->left_fork_id;
 	pthread_mutex_lock(&philo->share->m_fork[left_fork]);
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (ate_dieflg_check(philo, FORK) == -1)
+	if (check_starving(philo, FORK) == -1)
 	{
 		pthread_mutex_unlock(&philo->share->m_fork[left_fork]);
 		return (-1);
@@ -214,7 +214,7 @@ int	get_right_fork(t_philo *philo)
 	right_fork = philo->right_fork_id;
 	pthread_mutex_lock(&philo->share->m_fork[right_fork]);
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (ate_dieflg_check(philo, FORK) == -1)
+	if (check_starving(philo, FORK) == -1)
 	{
 		pthread_mutex_unlock(&philo->share->m_fork[right_fork]);
 		return (-1);
@@ -242,6 +242,11 @@ void	adjustment_sleep(long end)
 
 	while (1)
 	{
+		// if (starving_flg || full_stomach_flg)
+		// {
+		// 	break ;
+		// }
+
 		now = get_time();
 		if (now >= end)
 			break ;
@@ -252,7 +257,7 @@ void	adjustment_sleep(long end)
 int	eat(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (ate_dieflg_check(philo, EAT) == -1)
+	if (check_starving(philo, EAT) == -1)
 		return (-1);
 
 	philo->exact_time = get_time();
@@ -260,7 +265,8 @@ int	eat(t_philo *philo)
 
 	show_log(philo->exact_time, philo->id, SHOW_EAT);
 	pthread_mutex_unlock(&philo->share->meal_check);
-	adjustment_sleep(get_time() + philo->share->eat_time);
+	// adjustment_sleep(get_time() + philo->share->eat_time);
+	adjustment_sleep(philo->exact_time + philo->share->eat_time);
 	philo->ate_count += 1; // 何回食べたか
 
 	if (philo->ate_count == philo->share->ate_num) // 回数分食べ切ったらateに加算する
@@ -271,18 +277,21 @@ int	eat(t_philo *philo)
 int	philo_sleep(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (ate_dieflg_check(philo, SLEEP) == -1)
+	if (check_starving(philo, SLEEP) == -1)
 		return (-1);
-	show_log(get_time(), philo->id, SHOW_SLEEP);
+	philo->exact_time = get_time();
+	// show_log(get_time(), philo->id, SHOW_SLEEP);
+	show_log(philo->exact_time, philo->id, SHOW_SLEEP);
 	pthread_mutex_unlock(&philo->share->meal_check);
-	adjustment_sleep(get_time() + philo->share->sleep_time);
+	// adjustment_sleep(get_time() + philo->share->sleep_time);
+	adjustment_sleep(philo->exact_time + philo->share->sleep_time);
 	return (0);
 }
 
 int	think(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->share->meal_check);
-	if (ate_dieflg_check(philo, THINK) == -1)
+	if (check_starving(philo, THINK) == -1)
 		return (-1);
 	show_log(get_time(), philo->id, SHOW_THINK);
 	pthread_mutex_unlock(&philo->share->meal_check);

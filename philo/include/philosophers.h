@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/25 15:30:09 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/26 11:44:54 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <unistd.h> // write, usleep
 # include <stdlib.h> // malloc, free
 # include <string.h> // memset
-# include <stdio.h> // printf 使わない方がいい,error,debug用
+# include <stdio.h> // printf
 # include <sys/time.h> // gettimeofday
 # include <pthread.h> // pthread
 # include <stdbool.h> // bool
@@ -41,10 +41,10 @@ typedef struct s_share
 	int	ate_num;
 
 	pthread_mutex_t	*m_fork;
-	pthread_mutex_t	meal_check;
+	pthread_mutex_t	meal_check; // philoのactの前、もしくは間にずっとflgを見ている, change name flg_check
 	int				equal_ate_cnt; // ate_numと同じ回数になった場合加算される
-	int				all_ate_flg; // 回数分食べたかどうか
-	int				die_flg; // 死んだかどうか
+	int				full_stomach_flg; // 回数分食べたかどうか
+	int				starving_flg; // 死んだかどうか
 }	t_share;
 
 typedef struct s_philo
@@ -54,7 +54,7 @@ typedef struct s_philo
 	int				left_fork_id;
 	int				right_fork_id;
 	int				ate_count; // 何回食べたか
-	long			exact_time; // get_time()を2回使う関数はこれに入れて時刻の不整合を無くす
+	long			exact_time; // これ必要なくね？ get_time()を2回使う関数はこれに入れて時刻の不整合を無くす
 	long			die_limit_time; // exact_timeとdie_timeを足し合わせた時刻
 	t_share			*share;
 	struct s_philo	*left; // 左のphilo, next
