@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 18:36:04 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 18:39:25 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,11 @@ typedef enum s_num
 
 typedef struct s_share
 {
-	int	philo_num;
-	int	die_time;
-	int	eat_time;
-	int	sleep_time;
-	int	ate_num;
-
+	int				philo_num;
+	int				die_time;
+	int				eat_time;
+	int				sleep_time;
+	int				ate_num;
 	pthread_mutex_t	*m_fork;
 	pthread_mutex_t	lock_share_var;
 	pthread_mutex_t	lock_timestamp;
@@ -90,15 +89,15 @@ long	get_time(void);
 void	show_log(long time, int philo_id, char *log_msg);
 
 // fork.c
-int	put_forks(t_philo *philo);
-int	get_left_fork(t_philo *philo);
-int	get_right_fork(t_philo *philo);
-int	taken_a_fork(t_philo *philo);
+int		put_forks(t_philo *philo);
+int		get_left_fork(t_philo *philo);
+int		get_right_fork(t_philo *philo);
+int		taken_a_fork(t_philo *philo);
 
 // flag.c
-int	check_full_stomach(t_philo *philo);
-int	check_starving(t_philo *philo);
-int	check_flg(t_philo *philo);
+int		check_full_stomach(t_philo *philo);
+int		check_starving(t_philo *philo);
+int		check_flg(t_philo *philo);
 
 // thread.c
 void	*monitor(void *param);
@@ -106,8 +105,8 @@ void	*philo_action(void *param);
 bool	main_threads(t_philo *philo);
 
 // action.c
-int	eating(t_philo *philo);
-int	sleeping(t_philo *philo);
-int	thinking(t_philo *philo);
+int		eating(t_philo *philo);
+int		sleeping(t_philo *philo);
+int		thinking(t_philo *philo);
 
 #endif
