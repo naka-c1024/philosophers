@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 10:23:26 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 14:41:09 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,16 +172,14 @@ void	*monitor(void *param)
 		pthread_mutex_lock(&philo->share->lock_share_var);
 		if (philo->share->starving_flg || philo->share->full_stomach_flg)
 			break ;
-		if (check_full_stomach(philo))
-			break ;
-		if (check_starving(philo))
+		if (check_full_stomach(philo) || check_starving(philo))
 			break ;
 		pthread_mutex_unlock(&philo->share->lock_share_var);
 		pthread_mutex_unlock(&philo->share->lock_timestamp);
 		// usleep(1000);
 		usleep(100); // guacamoleだと100で"200 410 200 200"が生き延びた
 	}
-	put_forks(philo); // これ必要?
+	put_forks(philo); // これ必要?->必要,philoが1の時に終わらなくなる,unlockは何回してもいい
 	pthread_mutex_unlock(&philo->share->lock_share_var);
 	pthread_mutex_unlock(&philo->share->lock_timestamp);
 	return (NULL);
@@ -255,7 +253,7 @@ int	eat(t_philo *philo)
 
 	pthread_mutex_lock(&philo->share->lock_timestamp);
 	if (check_flg(philo, EAT) == -1)
-		return (-1);
+		return (-1); // return (put_forks(philo))
 
 	exact_time = get_time();
 	philo->die_limit_time = exact_time + philo->share->die_time;
@@ -271,7 +269,7 @@ int	eat(t_philo *philo)
 	{
 		pthread_mutex_lock(&philo->share->lock_timestamp);
 		if (check_flg(philo, EAT) == -1)
-			return (-1);
+			return (-1); // return (put_forks(philo))
 		pthread_mutex_unlock(&philo->share->lock_timestamp);
 
 		exact_time = get_time();

@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 10:06:32 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 14:34:57 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,7 @@ typedef enum e_flag
 	EAT,
 	FORK,
 	THINK,
-	SLEEP,
-	ELSE
+	SLEEP
 }	t_flag;
 
 // check_arg.c
