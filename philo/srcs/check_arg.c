@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 08:51:15 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/23 12:03:11 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 16:12:41 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ bool	is_uint(char *str)
 	ans = 0;
 	i = 0;
 	len = ft_strlen(str);
-	if (str[i] == '-')
+	if (str[i] == '-' || str[i] == '0')
 		return (false);
 	if (str[i] == '+' && len != 1)
 		i++;
