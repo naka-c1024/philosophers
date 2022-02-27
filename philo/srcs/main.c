@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 17:42:39 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 18:06:16 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,13 +145,8 @@ int	check_starving(t_philo *philo)
 
 int	put_forks(t_philo *philo)
 {
-	int	left_fork;
-	int	right_fork;
-
-	left_fork = philo->left_fork_id;
-	right_fork = philo->right_fork_id;
-	pthread_mutex_unlock(&(philo->share->m_fork[left_fork]));
-	pthread_mutex_unlock(&(philo->share->m_fork[right_fork]));
+	pthread_mutex_unlock(&(philo->share->m_fork[philo->left_fork_id]));
+	pthread_mutex_unlock(&(philo->share->m_fork[philo->right_fork_id]));
 	return (STOP);
 }
 
@@ -262,8 +257,7 @@ int	eating(t_philo *philo)
 		if (check_flg(philo) == STOP)
 			return (put_forks(philo));
 
-		exact_time = get_time();
-		if (exact_time >= end_time)
+		if (get_time() >= end_time)
 			break ;
 		usleep(1000);
 	}
@@ -288,8 +282,7 @@ int	sleeping(t_philo *philo)
 	{
 		if (check_flg(philo) == STOP)
 			return (STOP);
-		exact_time = get_time();
-		if (exact_time >= end_time)
+		if (get_time() >= end_time)
 			break ;
 		usleep(1000);
 	}
