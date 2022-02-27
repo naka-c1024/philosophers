@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 15:42:08 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 17:42:39 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	destroy_philos(t_philo *philos, int count)
 	}
 }
 
-void	destroy_rules(t_share *share)
+void	destroy_share(t_share *share)
 {
 	int	i;
 
@@ -66,28 +66,26 @@ t_philo	*create_philo(t_share *share)
 	t_philo	*new;
 	int		i;
 
-	int	num; // jとかに変える,numをiに変えて上のをjにするのもあり
-
-	num = 0;
-	while (num < share->philo_num)
-		pthread_mutex_init(&share->m_fork[num++], NULL);
+	i = 0;
+	while (i < share->philo_num)
+		pthread_mutex_init(&share->m_fork[i++], NULL);
 	pthread_mutex_init(&share->lock_share_var, NULL);
 	pthread_mutex_init(&share->lock_timestamp, NULL);
 
 	philo = first_philo(share); // 最初に一人
 	if (!philo)
 	{
-		destroy_rules(share);
+		destroy_share(share);
 		return (NULL);
 	}
-	i = 1;
+	i = 1; // ここでまたiを初期化
 	while (i < share->philo_num) // 双方好循環リスト作成
 	{
 		new = (t_philo *)malloc(sizeof(t_philo));
 		if (new == NULL)
 		{
 			destroy_philos(philo, i);
-			destroy_rules(share);
+			destroy_share(share);
 			return (NULL);
 		}
 
@@ -154,7 +152,7 @@ int	put_forks(t_philo *philo)
 	right_fork = philo->right_fork_id;
 	pthread_mutex_unlock(&(philo->share->m_fork[left_fork]));
 	pthread_mutex_unlock(&(philo->share->m_fork[right_fork]));
-	return (0);
+	return (STOP);
 }
 
 void	*monitor(void *param)
@@ -247,10 +245,7 @@ int	eating(t_philo *philo)
 
 	pthread_mutex_lock(&philo->share->lock_timestamp);
 	if (check_flg(philo) == STOP)
-	{
-		put_forks(philo);
-		return (STOP);
-	}
+		return (put_forks(philo));
 
 	exact_time = get_time();
 	philo->die_limit_time = exact_time + philo->share->die_time;
@@ -265,10 +260,7 @@ int	eating(t_philo *philo)
 	while (1)
 	{
 		if (check_flg(philo) == STOP)
-		{
-			put_forks(philo);
-			return (STOP);
-		}
+			return (put_forks(philo));
 
 		exact_time = get_time();
 		if (exact_time >= end_time)
@@ -379,11 +371,11 @@ int main(int argc, char **argv)
 	if (main_threads(philo) == false)
 	{
 		destroy_philos(philo, share->philo_num);
-		destroy_rules(share);
+		destroy_share(share);
 		return (EXIT_FAILURE);
 	}
 
 	destroy_philos(philo, share->philo_num);
-	destroy_rules(share);
+	destroy_share(share);
 	return (EXIT_SUCCESS);
 }
