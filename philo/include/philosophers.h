@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 15:07:09 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 15:46:19 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@
 # define SHOW_THINK "is thinking"
 # define SHOW_DIED "died"
 
-# define STOP -1
+typedef enum s_num
+{
+	STOP = -1
+}	t_num;
 
 typedef struct s_share
 {
@@ -61,7 +64,7 @@ typedef struct s_philo
 	t_share			*share;
 	struct s_philo	*left; // 左のphilo, next
 	struct s_philo	*right; // 右のphilo, pre
-}			t_philo;
+}	t_philo;
 
 // check_arg.c
 void	show_help(void);
