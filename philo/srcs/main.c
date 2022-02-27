@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 14:53:37 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 15:00:40 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,7 @@ int	get_right_fork(t_philo *philo)
 	return (0);
 }
 
-int	get_forks(t_philo *philo)
+int	taken_a_fork(t_philo *philo)
 {
 	if (get_left_fork(philo) == STOP)
 		return (STOP);
@@ -245,7 +245,7 @@ int	get_forks(t_philo *philo)
 	return (0);
 }
 
-int	eat(t_philo *philo)
+int	eating(t_philo *philo)
 {
 	long	exact_time;
 	long	end_time;
@@ -276,10 +276,11 @@ int	eat(t_philo *philo)
 			break ;
 		usleep(1000);
 	}
+	put_forks(philo);
 	return (0);
 }
 
-int	philo_sleep(t_philo *philo)
+int	sleeping(t_philo *philo)
 {
 	long	exact_time;
 	long	end_time;
@@ -308,7 +309,7 @@ int	philo_sleep(t_philo *philo)
 	return (0);
 }
 
-int	think(t_philo *philo)
+int	thinking(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->share->lock_timestamp);
 	if (check_flg(philo, THINK) == STOP)
@@ -330,11 +331,10 @@ void	*philo_action(void *param)
 		return (NULL);
 	while (1)
 	{
-		if (get_forks(philo) == STOP ||
-			eat(philo) == STOP ||
-			put_forks(philo) == STOP ||
-			philo_sleep(philo) == STOP ||
-			think(philo) == STOP)
+		if (taken_a_fork(philo) == STOP ||
+			eating(philo) == STOP ||
+			sleeping(philo) == STOP ||
+			thinking(philo) == STOP)
 			break ;
 	}
 	pthread_join(monitor_id, NULL);
