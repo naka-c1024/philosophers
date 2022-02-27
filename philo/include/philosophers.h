@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 14:47:28 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 15:07:09 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,6 @@ typedef struct s_philo
 	struct s_philo	*left; // 左のphilo, next
 	struct s_philo	*right; // 右のphilo, pre
 }			t_philo;
-
-typedef enum e_flag
-{
-	EAT,
-	FORK,
-	THINK,
-	SLEEP
-}	t_flag;
 
 // check_arg.c
 void	show_help(void);
