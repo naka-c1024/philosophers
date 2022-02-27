@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 14:34:57 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 14:47:28 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 # define SHOW_SLEEP "is sleeping"
 # define SHOW_THINK "is thinking"
 # define SHOW_DIED "died"
+
+# define STOP -1
 
 typedef struct s_share
 {
