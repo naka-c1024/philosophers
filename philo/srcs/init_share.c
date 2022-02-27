@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/23 21:30:22 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 14:54:28 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 18:43:59 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ t_share	*init_share(int argc, char **argv)
 		share->ate_num = ft_atoi(argv[5]);
 	else
 		share->ate_num = -1;
-
-	share->m_fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * share->philo_num);
+	share->m_fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
+			* share->philo_num);
 	if (share->m_fork == NULL)
 	{
 		free(share);
@@ -83,6 +83,5 @@ t_share	*init_share(int argc, char **argv)
 	share->equal_ate_cnt = 0;
 	share->full_stomach_flg = 0;
 	share->starving_flg = 0;
-
 	return (share);
 }

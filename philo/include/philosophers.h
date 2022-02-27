@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 16:04:14 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 18:39:25 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 19:10:26 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ t_share	*init_share(int argc, char **argv);
 
 // create_philo.c
 t_philo	*first_philo(t_share *share);
+bool	create_philo_util(t_philo **ph, t_philo **new, t_share *share, int i);
 t_philo	*create_philo(t_share *share);
 
 // destroy.c

@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 18:32:26 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 18:33:24 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 18:46:42 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@ void	*philo_action(void *param)
 		return (NULL);
 	while (1)
 	{
-		if (taken_a_fork(philo) == STOP ||
-			eating(philo) == STOP ||
-			sleeping(philo) == STOP ||
-			thinking(philo) == STOP)
+		if (taken_a_fork(philo) == STOP
+			|| eating(philo) == STOP
+			|| sleeping(philo) == STOP
+			|| thinking(philo) == STOP)
 			break ;
 	}
 	pthread_join(monitor_id, NULL);
@@ -66,18 +66,17 @@ bool	main_threads(t_philo *philo)
 	i = 0;
 	while (i < philo_num)
 	{
-		if (pthread_create(&(philo->thread_id), NULL, philo_action, (void *)philo))
+		if (pthread_create(&(philo->thread_id), NULL,
+				philo_action, (void *)philo))
 			return (false);
 		philo = philo->left;
 		i++;
 	}
-
 	while (philo_num--)
 	{
 		if (pthread_join(philo->thread_id, NULL))
 			return (false);
 		philo = philo->left;
 	}
-
 	return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/27 18:19:12 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 18:21:40 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 19:11:01 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,28 @@ t_philo	*first_philo(t_share *share)
 	return (philo);
 }
 
+bool	create_philo_util(t_philo **ph, t_philo **new, t_share *share, int i)
+{
+	*new = (t_philo *)malloc(sizeof(t_philo));
+	if (*new == NULL)
+	{
+		destroy_philos(*ph, i);
+		destroy_share(share);
+		return (false);
+	}
+	(*new)->id = i + 1;
+	(*new)->right_fork_id = i;
+	(*new)->left_fork_id = (i + 1) % share->philo_num;
+	(*new)->ate_count = 0;
+	(*new)->die_limit_time = 0;
+	(*new)->share = share;
+	(*ph)->right->left = *new;
+	(*new)->right = (*ph)->right;
+	(*new)->left = *ph;
+	(*ph)->right = *new;
+	return (true);
+}
+
 t_philo	*create_philo(t_share *share)
 {
 	t_philo	*philo;
@@ -50,23 +72,8 @@ t_philo	*create_philo(t_share *share)
 	i = 1;
 	while (i < share->philo_num)
 	{
-		new = (t_philo *)malloc(sizeof(t_philo));
-		if (new == NULL)
-		{
-			destroy_philos(philo, i);
-			destroy_share(share);
+		if (create_philo_util(&philo, &new, share, i) == false)
 			return (NULL);
-		}
-		new->id = i + 1;
-		new->right_fork_id = i;
-		new->left_fork_id = (i + 1) % share->philo_num;
-		new->ate_count = 0;
-		new->die_limit_time = 0;
-		new->share = share;
-		philo->right->left = new;
-		new->right = philo->right;
-		new->left = philo;
-		philo->right = new;
 		i++;
 	}
 	return (philo);
