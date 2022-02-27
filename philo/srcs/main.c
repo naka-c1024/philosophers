@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/27 10:11:16 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 10:23:26 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,6 +189,7 @@ void	*monitor(void *param)
 
 int	check_flg(t_philo *philo, int type)
 {
+	pthread_mutex_lock(&philo->share->lock_share_var);
 	if (philo->share->full_stomach_flg || philo->share->starving_flg)
 	{
 		if (type == EAT)
@@ -197,6 +198,7 @@ int	check_flg(t_philo *philo, int type)
 		pthread_mutex_unlock(&philo->share->lock_timestamp);
 		return (-1);
 	}
+	pthread_mutex_unlock(&philo->share->lock_share_var);
 	return (0);
 }
 
@@ -207,14 +209,12 @@ int	get_left_fork(t_philo *philo)
 	left_fork = philo->left_fork_id;
 	pthread_mutex_lock(&philo->share->m_fork[left_fork]); // ここの順番入れ替えるだけでなぜか死ぬようになる
 	pthread_mutex_lock(&philo->share->lock_timestamp);
-	pthread_mutex_lock(&philo->share->lock_share_var);
 	if (check_flg(philo, FORK) == -1)
 	{
 		pthread_mutex_unlock(&philo->share->m_fork[left_fork]);
 		return (-1);
 	}
 	show_log(get_time(), philo->id, SHOW_FORK);
-	pthread_mutex_unlock(&philo->share->lock_share_var);
 	pthread_mutex_unlock(&philo->share->lock_timestamp);
 	return (0);
 }
@@ -226,14 +226,12 @@ int	get_right_fork(t_philo *philo)
 	right_fork = philo->right_fork_id;
 	pthread_mutex_lock(&philo->share->m_fork[right_fork]);
 	pthread_mutex_lock(&philo->share->lock_timestamp);
-	pthread_mutex_lock(&philo->share->lock_share_var);
 	if (check_flg(philo, FORK) == -1)
 	{
 		pthread_mutex_unlock(&philo->share->m_fork[right_fork]);
 		return (-1);
 	}
 	show_log(get_time(), philo->id, SHOW_FORK);
-	pthread_mutex_unlock(&philo->share->lock_share_var);
 	pthread_mutex_unlock(&philo->share->lock_timestamp);
 	return (0);
 }
@@ -256,7 +254,6 @@ int	eat(t_philo *philo)
 	long	end_time;
 
 	pthread_mutex_lock(&philo->share->lock_timestamp);
-	pthread_mutex_lock(&philo->share->lock_share_var);
 	if (check_flg(philo, EAT) == -1)
 		return (-1);
 
@@ -267,17 +264,14 @@ int	eat(t_philo *philo)
 	philo->ate_count += 1; // 何回食べたか
 	if (philo->ate_count == philo->share->ate_num) // 回数分食べ切ったらateに加算する
 		philo->share->equal_ate_cnt += 1;
-	pthread_mutex_unlock(&philo->share->lock_share_var);
 	pthread_mutex_unlock(&philo->share->lock_timestamp);
 
 	end_time = exact_time + philo->share->eat_time;
 	while (1)
 	{
 		pthread_mutex_lock(&philo->share->lock_timestamp);
-		pthread_mutex_lock(&philo->share->lock_share_var);
 		if (check_flg(philo, EAT) == -1)
 			return (-1);
-		pthread_mutex_unlock(&philo->share->lock_share_var);
 		pthread_mutex_unlock(&philo->share->lock_timestamp);
 
 		exact_time = get_time();
@@ -294,22 +288,18 @@ int	philo_sleep(t_philo *philo)
 	long	end_time;
 
 	pthread_mutex_lock(&philo->share->lock_timestamp);
-	pthread_mutex_lock(&philo->share->lock_share_var);
 	if (check_flg(philo, SLEEP) == -1)
 		return (-1);
 	exact_time = get_time();
 	show_log(exact_time, philo->id, SHOW_SLEEP);
-	pthread_mutex_unlock(&philo->share->lock_share_var);
 	pthread_mutex_unlock(&philo->share->lock_timestamp);
 
 	end_time = exact_time + philo->share->eat_time;
 	while (1)
 	{
 		pthread_mutex_lock(&philo->share->lock_timestamp);
-		pthread_mutex_lock(&philo->share->lock_share_var);
 		if (check_flg(philo, SLEEP) == -1)
 			return (-1);
-		pthread_mutex_unlock(&philo->share->lock_share_var);
 		pthread_mutex_unlock(&philo->share->lock_timestamp);
 
 		exact_time = get_time();
@@ -324,11 +314,9 @@ int	philo_sleep(t_philo *philo)
 int	think(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->share->lock_timestamp);
-	pthread_mutex_lock(&philo->share->lock_share_var);
 	if (check_flg(philo, THINK) == -1)
 		return (-1);
 	show_log(get_time(), philo->id, SHOW_THINK);
-	pthread_mutex_unlock(&philo->share->lock_share_var);
 	pthread_mutex_unlock(&philo->share->lock_timestamp);
 	return (0);
 }
