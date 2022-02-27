@@ -6,7 +6,7 @@
 /*   By: ynakashi <ynakashi@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/13 15:58:38 by ynakashi          #+#    #+#             */
-/*   Updated: 2022/02/26 16:13:05 by ynakashi         ###   ########.fr       */
+/*   Updated: 2022/02/27 09:43:20 by ynakashi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,10 +131,14 @@ int	check_full_stomach(t_philo *philo)
 
 int	check_starving(t_philo *philo)
 {
-	if (get_time() >= philo->die_limit_time)
+	long	exact_time;
+
+
+	exact_time = get_time();
+	if (exact_time >= philo->die_limit_time)
 	{
 		philo->share->starving_flg = 1;
-		show_log(get_time(), philo->id, SHOW_DIED);
+		show_log(exact_time, philo->id, SHOW_DIED);
 		return (1);
 	}
 	return (0);
